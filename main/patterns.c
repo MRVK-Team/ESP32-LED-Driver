@@ -223,13 +223,13 @@ const pattern_t PAT_HALF_TURQUOISE = {
     .name = "half turquoise",
     .px = {
         { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
         { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
         { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
         { T,K,T,K,T,K,T,K },
-        { T,K,T,K,T,K,T,K },
-        { T,K,T,K,T,K,T,K },
-        { T,K,T,K,T,K,T,K },
-        { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
     },
 };
 
@@ -239,13 +239,13 @@ const pattern_t PAT_HALF_TURQUOISE = {
 const pattern_t PAT_BEER = {
     .name = "beer",
     .px = {
-        { K,K,K,W,W,W,K,K },
+        { K,K,W,W,W,K,K,K },
         { K,W,W,W,W,W,K,K },
-        { K,W,W,Y,Y,Y,W,K },
+        { K,W,W,W,W,W,W,K },
         { K,W,Y,Y,Y,W,K,W },
-        { W,K,W,Y,Y,Y,W,K },
         { K,W,Y,Y,Y,W,K,W },
-        { K,W,W,Y,Y,Y,W,K },
+        { K,W,Y,Y,Y,W,K,W },
+        { K,W,Y,Y,Y,W,W,K },
         { K,W,W,W,W,W,K,K },
     },
 };

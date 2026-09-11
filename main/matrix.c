@@ -1,13 +1,52 @@
 #include "matrix.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "esp_log.h"
 #include "led_strip.h"
 
 static const char *TAG = "matrix";
 
-static led_strip_handle_t s_strip;
+#if MATRIX_MIRROR
+#define MATRIX_OUTPUTS  2
+#else
+#define MATRIX_OUTPUTS  1
+#endif
+
+/* One handle per data pin. Every write goes to all of them, so the panels
+   always show the same frame. */
+static led_strip_handle_t s_strip[MATRIX_OUTPUTS];
+static const int s_gpio[MATRIX_OUTPUTS] = {
+    MATRIX_GPIO,
+#if MATRIX_MIRROR
+    MATRIX_GPIO_MIRROR,
+#endif
+};
+
 static rgb_t s_buf[MATRIX_HEIGHT][MATRIX_WIDTH];
 static uint8_t s_brightness = 64;
+
+static void strip_set(uint32_t index, uint8_t r, uint8_t g, uint8_t b)
+{
+    for (int s = 0; s < MATRIX_OUTPUTS; s++) {
+        ESP_ERROR_CHECK(led_strip_set_pixel(s_strip[s], index, r, g, b));
+    }
+}
+
+static void strip_refresh(void)
+{
+    for (int s = 0; s < MATRIX_OUTPUTS; s++) {
+        ESP_ERROR_CHECK(led_strip_refresh(s_strip[s]));
+    }
+}
+
+static void strip_clear(void)
+{
+    for (int s = 0; s < MATRIX_OUTPUTS; s++) {
+        ESP_ERROR_CHECK(led_strip_clear(s_strip[s]));
+    }
+}
 
 /* Map (x, y), y = 0 at the top, to the index in the LED chain.
    See the MATRIX_* wiring macros in matrix.h. */
@@ -25,7 +64,9 @@ static uint32_t xy_to_index(uint32_t x, uint32_t y)
     y = t;
 #endif
 #if MATRIX_SERPENTINE
-    if (y & 1) {
+    /* Reverse the odd rows, or the even ones if the chain starts by running
+       right->left. */
+    if (((y & 1) ^ (MATRIX_FIRST_ROW_REVERSED & 1)) != 0) {
         x = MATRIX_WIDTH - 1 - x;
     }
 #endif
@@ -34,22 +75,24 @@ static uint32_t xy_to_index(uint32_t x, uint32_t y)
 
 void matrix_init(void)
 {
-    ESP_LOGI(TAG, "%dx%d WS2812B matrix on GPIO %d", MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_GPIO);
+    for (int s = 0; s < MATRIX_OUTPUTS; s++) {
+        ESP_LOGI(TAG, "%dx%d WS2812B matrix on GPIO %d", MATRIX_WIDTH, MATRIX_HEIGHT, s_gpio[s]);
 
-    led_strip_config_t strip_config = {
-        .strip_gpio_num = MATRIX_GPIO,
-        .max_leds = MATRIX_LEDS,
-        .led_model = LED_MODEL_WS2812,
-        .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_GRB,
-        .flags.invert_out = false,
-    };
-    led_strip_rmt_config_t rmt_config = {
-        .clk_src = RMT_CLK_SRC_DEFAULT,
-        .resolution_hz = 10 * 1000 * 1000, // 10MHz
-        .mem_block_symbols = 64,
-        .flags.with_dma = false,
-    };
-    ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &s_strip));
+        led_strip_config_t strip_config = {
+            .strip_gpio_num = s_gpio[s],
+            .max_leds = MATRIX_LEDS,
+            .led_model = LED_MODEL_WS2812,
+            .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_GRB,
+            .flags.invert_out = false,
+        };
+        led_strip_rmt_config_t rmt_config = {
+            .clk_src = RMT_CLK_SRC_DEFAULT,
+            .resolution_hz = 10 * 1000 * 1000, // 10MHz
+            .mem_block_symbols = 64,
+            .flags.with_dma = false,
+        };
+        ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &s_strip[s]));
+    }
 
     matrix_clear();
     matrix_show();
@@ -97,16 +140,66 @@ void matrix_show(void)
             uint8_t r = (uint16_t)c.r * (s_brightness + 1) >> 8;
             uint8_t g = (uint16_t)c.g * (s_brightness + 1) >> 8;
             uint8_t b = (uint16_t)c.b * (s_brightness + 1) >> 8;
-            ESP_ERROR_CHECK(led_strip_set_pixel(s_strip, xy_to_index(x, y), r, g, b));
+            strip_set(xy_to_index(x, y), r, g, b);
         }
     }
-    ESP_ERROR_CHECK(led_strip_refresh(s_strip));
+    strip_refresh();
 }
 
 void matrix_blank(void)
 {
     matrix_clear();
     matrix_show();
+}
+
+void matrix_set_index(uint32_t i, rgb_t c)
+{
+    if (i >= MATRIX_LEDS) {
+        return;
+    }
+    uint8_t r = (uint16_t)c.r * (s_brightness + 1) >> 8;
+    uint8_t g = (uint16_t)c.g * (s_brightness + 1) >> 8;
+    uint8_t b = (uint16_t)c.b * (s_brightness + 1) >> 8;
+    strip_set(i, r, g, b);
+}
+
+void matrix_refresh_raw(void)
+{
+    strip_refresh();
+}
+
+void matrix_walk_chain(uint32_t step_ms)
+{
+    const rgb_t white = { 255, 255, 255 };
+
+    for (uint32_t i = 0; i < MATRIX_LEDS; i++) {
+        strip_clear();
+        matrix_set_index(i, white);
+        matrix_refresh_raw();
+        ESP_LOGI(TAG, "chain index %u", (unsigned)i);
+        vTaskDelay(pdMS_TO_TICKS(step_ms));
+    }
+    strip_clear();
+    matrix_refresh_raw();
+}
+
+void matrix_test_chain(void)
+{
+    const rgb_t red   = { 255,   0,   0 };
+    const rgb_t green = {   0, 255,   0 };
+    const rgb_t blue  = {   0,   0, 255 };
+
+    strip_clear();
+    for (uint32_t i = 0; i < 8; i++) {
+        matrix_set_index(i, red);
+    }
+    for (uint32_t i = 8; i < 16; i++) {
+        matrix_set_index(i, green);
+    }
+    for (uint32_t i = 56; i < MATRIX_LEDS; i++) {
+        matrix_set_index(i, blue);
+    }
+    matrix_refresh_raw();
 }
 
 void matrix_test_corners(void)

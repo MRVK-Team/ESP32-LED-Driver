@@ -42,9 +42,11 @@ void app_main(void)
         // play(&SEQ_SHAPES, 1);
         visualise_for(&PAT_BEER, 5000);
         blink(&PAT_HALF_TURQUOISE,  500, 200, 20);
+        // matrix_walk_chain(100);
+        // matrix_test_chain();
 
         // blink(&PAT_BEER, 200, 200, 4);
-        // matrix_blank();
-        // vTaskDelay(pdMS_TO_TICKS(500));
+        matrix_blank();
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

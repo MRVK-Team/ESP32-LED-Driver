@@ -12,6 +12,14 @@ extern "C" {
 #endif
 
 #define MATRIX_GPIO         1       /* data-in pin of the matrix */
+
+/* Mirror the exact same frame onto a second data pin, for a second panel
+   wired the same way. Set MATRIX_MIRROR to 0 to drive only MATRIX_GPIO.
+   Each output uses one RMT TX channel; the ESP32-C3 has two, so two is the
+   limit here. */
+#define MATRIX_MIRROR       1
+#define MATRIX_GPIO_MIRROR  0       /* data-in pin of the second matrix */
+
 #define MATRIX_WIDTH        8
 #define MATRIX_HEIGHT       8
 #define MATRIX_LEDS         (MATRIX_WIDTH * MATRIX_HEIGHT)
@@ -34,10 +42,21 @@ extern "C" {
    Symmetric pictures (arrows, checkerboards, full colours) look correct even
    when this is wrong, so always test with something asymmetric. */
 
-/* Most 8x8 WS2812B panels are wired zig-zag: the first row runs one way, the
-   next row back the other way. Set to 0 if every row starts on the same side
-   (progressive wiring). */
-#define MATRIX_SERPENTINE   1
+/* Many 8x8 WS2812B panels are wired zig-zag: the first row runs one way, the
+   next row back the other way. THIS panel is not one of them - every row
+   starts on the same side (progressive wiring), confirmed with
+   matrix_walk_chain(): LED 0 is top-left, the first eight run left->right
+   along the top row, and the second eight run left->right again.
+
+   Symptom of getting this wrong: every second row of a picture comes out
+   mirrored, so the panel only looks right if you pre-mirror those rows in the
+   pattern table. Never do that - fix it here instead. */
+#define MATRIX_SERPENTINE   0
+
+/* Only used when MATRIX_SERPENTINE is 1: which half of the zig-zag is
+   reversed. 0 = the driver reverses the odd rows (top row runs left->right),
+   1 = it reverses the even rows instead. */
+#define MATRIX_FIRST_ROW_REVERSED   0
 
 /* Mirror left<->right / top<->bottom, for panels whose first LED is not at
    the top-left corner as you are looking at it. */
@@ -78,6 +97,24 @@ void matrix_blank(void);
    (0,7) bottom-left, and white on chain index 0 (the first physical LED).
    Use it to set the MATRIX_* wiring macros above. */
 void matrix_test_corners(void);
+
+/* --- raw chain access, ignores every MATRIX_* mapping macro -------------
+   These talk to LED number `i` as the data line sees it: 0 is the first LED
+   after the connector, 63 the last. Use them to find out how the panel is
+   really wired, then set the macros above to match. */
+void matrix_set_index(uint32_t i, rgb_t color);
+void matrix_refresh_raw(void);
+
+/* Lights one LED at a time, 0 -> 63, logging each index. Watch where the dot
+   physically goes: that IS the wiring. Blocks for 64 * step_ms. */
+void matrix_walk_chain(uint32_t step_ms);
+
+/* Static wiring test, all at once:
+     chain 0..7   red      (the first eight LEDs)
+     chain 8..15  green    (the next eight)
+     chain 56..63 blue     (the last eight)
+   Report where each block sits and which way it runs. */
+void matrix_test_chain(void);
 
 #ifdef __cplusplus
 }
