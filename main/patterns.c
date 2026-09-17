@@ -20,7 +20,12 @@ static const rgb_t s_palette[CLR_COUNT] = {
     [CLR_BLUE]          = {   0,   0, 255 },
     [CLR_PURPLE]        = { 180,   0, 255 },
     [CLR_WHITE]         = { 255, 255, 255 },
+    [CLR_AMBER]         = { 255, 126,   0 },
     [CLR_TURQUOISE]     = {  64, 224, 204 },
+    [CLR_GRAY]      = {  64, 77, 77 },
+    [CLR_QRTOMI]     = {  255, 140, 0 },
+    [CLR_QRTOMI2]     = {  0, 0, 255 },
+    
 };
 
 rgb_t color_rgb(color_t c)
@@ -46,6 +51,10 @@ rgb_t color_rgb(color_t c)
 #define P   CLR_PURPLE
 #define W   CLR_WHITE
 #define T   CLR_TURQUOISE
+#define A   CLR_AMBER
+#define Q   CLR_QRTOMI
+#define Q2  CLR_QRTOMI2
+#define GR   CLR_GRAY
 
 /* ---------------------------------------------------------------------- */
 /* Patterns. Top row first, left column first.                             */
@@ -138,14 +147,14 @@ const pattern_t PAT_CROSS = {
 const pattern_t PAT_X = {
     .name = "x",
     .px = {
-        { R,K,K,K,K,K,K,R },
-        { K,R,K,K,K,K,R,K },
-        { K,K,R,K,K,R,K,K },
-        { K,K,K,R,R,K,K,K },
-        { K,K,K,R,R,K,K,K },
-        { K,K,R,K,K,R,K,K },
-        { K,R,K,K,K,K,R,K },
-        { R,K,K,K,K,K,K,R },
+        { R,R,K,K,K,K,R,R },
+        { R,R,R,K,K,R,R,R },
+        { K,R,R,R,R,R,R,K },
+        { K,K,R,R,R,R,K,K },
+        { K,K,R,R,R,R,K,K },
+        { K,R,R,R,R,R,R,K },
+        { R,R,R,K,K,R,R,R },
+        { R,R,K,K,K,K,R,R },
     },
 };
 
@@ -409,6 +418,283 @@ const pattern_t PAT_ROW7 = {
 };
 
 
+/* --- robot state icons ------------------------------------------------- */
+
+/* Green tick for MISSION_COMPLETE. */
+const pattern_t PAT_CHECK = {
+    .name = "check",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,G,K },
+        { K,K,K,K,K,G,G,K },
+        { G,K,K,K,G,G,K,K },
+        { G,G,K,G,G,K,K,K },
+        { K,G,G,G,K,K,K,K },
+        { K,K,G,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* Amber arrow travelling to the right, three frames, for
+   AUTONOMOUS_DRIVING. */
+const pattern_t PAT_DRIVE_0 = {
+    .name = "drive 0",
+    .px = {
+        // { K,K,K,A,A,K,K,K },
+        // { K,K,K,K,A,A,K,K },
+        // { A,A,A,A,A,A,A,A },
+        // { K,K,K,K,A,A,K,K },
+        // { K,K,K,A,A,K,K,K },
+        // { K,K,K,K,K,K,K,K },
+        // { K,K,K,K,K,K,K,K },
+        // { K,K,K,K,K,K,K,K },
+        { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
+        { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
+        { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
+        { T,K,T,K,T,K,T,K },
+        { K,T,K,T,K,T,K,T },
+    },
+};
+
+const pattern_t PAT_DRIVE_1 = {
+    .name = "drive 1",
+    .px = {
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+        { T,T,T,T,T,T,T,T },
+    },
+};
+
+const pattern_t PAT_DRIVE_2 = {
+    .name = "drive 2",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* --- LOAD_BEER sequence ------------------------------------------------ */
+
+/* The same glass as PAT_BEER, filling up. PAT_BEER itself is the last,
+   full frame - keep the outline identical in all of them or the glass
+   appears to jump. */
+const pattern_t PAT_BEER_EMPTY = {
+    .name = "beer empty",
+    .px = {
+        { K,K,W,W,W,K,K,K },
+        { K,W,W,W,W,W,K,K },
+        { K,W,W,W,W,W,W,K },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,W,K },
+        { K,W,W,W,W,W,K,K },
+    },
+};
+
+const pattern_t PAT_BEER_FILL1 = {
+    .name = "beer fill 1",
+    .px = {
+        { K,K,W,W,W,K,K,K },
+        { K,W,W,W,W,W,K,K },
+        { K,W,W,W,W,W,W,K },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,K,W },
+        { K,W,Y,Y,Y,W,W,K },
+        { K,W,W,W,W,W,K,K },
+    },
+};
+
+const pattern_t PAT_BEER_FILL2 = {
+    .name = "beer fill 2",
+    .px = {
+        { K,K,W,W,W,K,K,K },
+        { K,W,W,W,W,W,K,K },
+        { K,W,W,W,W,W,W,K },
+        { K,W,K,K,K,W,K,W },
+        { K,W,K,K,K,W,K,W },
+        { K,W,Y,Y,Y,W,K,W },
+        { K,W,Y,Y,Y,W,W,K },
+        { K,W,W,W,W,W,K,K },
+    },
+};
+
+const pattern_t PAT_BEER_FILL3 = {
+    .name = "beer fill 3",
+    .px = {
+        { K,K,W,W,W,K,K,K },
+        { K,W,W,W,W,W,K,K },
+        { K,W,W,W,W,W,W,K },
+        { K,W,K,K,K,W,K,W },
+        { K,W,Y,Y,Y,W,K,W },
+        { K,W,Y,Y,Y,W,K,W },
+        { K,W,Y,Y,Y,W,W,K },
+        { K,W,W,W,W,W,K,K },
+    },
+};
+
+/* Amber arrow pointing down into the glass: "put it in here". */
+const pattern_t PAT_LOAD_ARROW = {
+    .name = "load arrow",
+    .px = {
+        { K,K,K,A,A,K,K,K },
+        { K,K,K,A,A,K,K,K },
+        { A,A,K,A,A,K,A,A },
+        { K,A,A,A,A,A,A,K },
+        { K,K,A,A,A,A,K,K },
+        { K,K,K,A,A,K,K,K },
+        { K,W,W,W,W,W,W,K },
+        { K,W,W,W,W,W,W,K },
+    },
+};
+
+/* L-O-A-D, shown one letter at a time. */
+const pattern_t PAT_TEXT_L = {
+    .name = "letter L",
+    .px = {
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,A,A,A,A,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_TEXT_O = {
+    .name = "letter O",
+    .px = {
+        { K,K,A,A,A,K,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,K,A,A,A,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_TEXT_A = {
+    .name = "letter A",
+    .px = {
+        { K,K,A,A,A,K,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,A,A,A,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_TEXT_D = {
+    .name = "letter D",
+    .px = {
+        { K,A,A,A,A,K,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,A,A,A,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* --- SCAN_QR ----------------------------------------------------------- */
+
+/* A QR-like badge: three finder squares plus data modules. A real QR code
+   needs at least 21x21 modules, so this is a recognisable symbol telling the
+   operator to scan, not a scannable code. */
+const pattern_t PAT_QR = {
+    .name = "qr",
+    .px = {
+        { W,W,W,K,K,W,W,W },
+        { W,K,W,K,K,W,K,W },
+        { W,W,W,K,K,W,W,W },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { W,W,W,K,K,W,W,K },
+        { W,K,W,K,K,W,W,K },
+        { W,W,W,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_QR_TO = {
+    .name = "qr",
+    .px = {
+        { Q2,Q2,Q2,Q,Q,Q2,Q2,Q2 },
+        { Q2,Q,Q2,Q,Q,Q2,Q,Q2 },
+        { Q2,Q2,Q2,Q,Q,Q2,Q2,Q2 },
+        { Q,Q,Q,Q,Q,Q,Q,Q },
+        { Q,Q,Q,Q,Q,Q,Q,Q },
+        { Q2,Q2,Q2,Q,Q,Q2,Q2,Q },
+        { Q2,Q,Q2,Q,Q,Q2,Q2,Q },
+        { Q2,Q2,Q2,Q,Q,Q,Q,Q },
+    },
+};
+/* S-C-A-N. The A is PAT_TEXT_A, shared with the LOAD sequence. */
+const pattern_t PAT_TEXT_S = {
+    .name = "letter S",
+    .px = {
+        { K,K,A,A,A,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,K,A,A,A,K,K,K },
+        { K,K,K,K,K,A,K,K },
+        { K,K,K,K,K,A,K,K },
+        { K,K,A,A,A,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_TEXT_C = {
+    .name = "letter C",
+    .px = {
+        { K,K,A,A,A,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,A,K,K,K,K,K,K },
+        { K,K,A,A,A,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_TEXT_N = {
+    .name = "letter N",
+    .px = {
+        { K,A,K,K,K,A,K,K },
+        { K,A,A,K,K,A,K,K },
+        { K,A,A,K,K,A,K,K },
+        { K,A,K,A,K,A,K,K },
+        { K,A,K,K,A,A,K,K },
+        { K,A,K,K,A,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
 #undef K
 #undef R
 #undef O
@@ -419,6 +705,7 @@ const pattern_t PAT_ROW7 = {
 #undef P
 #undef W
 #undef T
+#undef A
 
 /* ---------------------------------------------------------------------- */
 /* Sequences: a list of frames plus how long each one is shown.            */

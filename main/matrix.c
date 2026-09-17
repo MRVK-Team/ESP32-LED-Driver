@@ -1,8 +1,11 @@
 #include "matrix.h"
 
+#include <stddef.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "esp_err.h"
 #include "esp_log.h"
 #include "led_strip.h"
 
@@ -30,21 +33,27 @@ static uint8_t s_brightness = 64;
 static void strip_set(uint32_t index, uint8_t r, uint8_t g, uint8_t b)
 {
     for (int s = 0; s < MATRIX_OUTPUTS; s++) {
-        ESP_ERROR_CHECK(led_strip_set_pixel(s_strip[s], index, r, g, b));
+        if (s_strip[s] != NULL) {
+            ESP_ERROR_CHECK(led_strip_set_pixel(s_strip[s], index, r, g, b));
+        }
     }
 }
 
 static void strip_refresh(void)
 {
     for (int s = 0; s < MATRIX_OUTPUTS; s++) {
-        ESP_ERROR_CHECK(led_strip_refresh(s_strip[s]));
+        if (s_strip[s] != NULL) {
+            ESP_ERROR_CHECK(led_strip_refresh(s_strip[s]));
+        }
     }
 }
 
 static void strip_clear(void)
 {
     for (int s = 0; s < MATRIX_OUTPUTS; s++) {
-        ESP_ERROR_CHECK(led_strip_clear(s_strip[s]));
+        if (s_strip[s] != NULL) {
+            ESP_ERROR_CHECK(led_strip_clear(s_strip[s]));
+        }
     }
 }
 
@@ -88,10 +97,19 @@ void matrix_init(void)
         led_strip_rmt_config_t rmt_config = {
             .clk_src = RMT_CLK_SRC_DEFAULT,
             .resolution_hz = 10 * 1000 * 1000, // 10MHz
-            .mem_block_symbols = 64,
+            /* 48 symbols = exactly one RMT memory block on the ESP32-C3.
+               Asking for 64 rounds up to two blocks, and then the second
+               output has none left to allocate. */
+            .mem_block_symbols = 48,
             .flags.with_dma = false,
         };
-        ESP_ERROR_CHECK(led_strip_new_rmt_device(&strip_config, &rmt_config, &s_strip[s]));
+        esp_err_t err = led_strip_new_rmt_device(&strip_config, &rmt_config, &s_strip[s]);
+        if (err != ESP_OK) {
+            /* Do not panic: a failed mirror output must not take down the
+               first panel. */
+            ESP_LOGE(TAG, "GPIO %d failed: %s", s_gpio[s], esp_err_to_name(err));
+            s_strip[s] = NULL;
+        }
     }
 
     matrix_clear();

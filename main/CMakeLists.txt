@@ -1,4 +1,11 @@
 idf_component_register(SRCS "blink_example_main.c"
                             "matrix.c"
                             "patterns.c"
-                       INCLUDE_DIRS ".")
+                            "buttons.c"
+                            "robot_state.c"
+                            "state_manager.c"
+                            "led_animator.c"
+                            "crc16.c"
+                            "uart_protocol.c"
+                       INCLUDE_DIRS "."
+                       REQUIRES esp_driver_gpio esp_driver_uart esp_driver_usb_serial_jtag esp_timer)

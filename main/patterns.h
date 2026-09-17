@@ -35,7 +35,12 @@ typedef enum {
     CLR_PURPLE,
     CLR_WHITE,
     CLR_TURQUOISE,
+    CLR_AMBER,
+    CLR_GRAY,
+    CLR_QRTOMI,
+    CLR_QRTOMI2,
     CLR_COUNT,
+
 } color_t;
 
 typedef struct {
@@ -84,6 +89,25 @@ extern const pattern_t PAT_FULL_ORANGE;
 extern const pattern_t PAT_FULL_TURQUOISE;
 extern const pattern_t PAT_HALF_TURQUOISE;
 extern const pattern_t PAT_BEER;
+extern const pattern_t PAT_BEER_EMPTY;
+extern const pattern_t PAT_BEER_FILL1;
+extern const pattern_t PAT_BEER_FILL2;
+extern const pattern_t PAT_BEER_FILL3;
+extern const pattern_t PAT_LOAD_ARROW;
+extern const pattern_t PAT_TEXT_L;
+extern const pattern_t PAT_TEXT_O;
+extern const pattern_t PAT_TEXT_A;
+extern const pattern_t PAT_TEXT_D;
+extern const pattern_t PAT_QR;
+extern const pattern_t PAT_TEXT_S;
+extern const pattern_t PAT_TEXT_C;
+extern const pattern_t PAT_TEXT_N;
+
+/* Robot state icons (see led_animator.c). */
+extern const pattern_t PAT_CHECK;
+extern const pattern_t PAT_DRIVE_0;
+extern const pattern_t PAT_DRIVE_1;
+extern const pattern_t PAT_DRIVE_2;
 extern const pattern_t PAT_BORDER;
 extern const pattern_t PAT_CHECKER_A;
 extern const pattern_t PAT_CHECKER_B;
