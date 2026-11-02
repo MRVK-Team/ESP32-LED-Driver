@@ -52,5 +52,14 @@
 #define SCAN_QR_HOLD_MS         1600    /* QR badge held */
 #define SCAN_QR_TEXT_MS         320     /* one letter of S-C-A-N */
 
+/* Mission states. QR_CONFIRM, ACCEPTED, REJECTED and NO_SIGNAL are single
+   still pictures and need no timing at all: a static panel is what tells an
+   approaching person "you, now". UNLOAD_BEER runs on the LOAD_BEER_* times
+   above, because it is that animation reversed. */
+#define RETURNING_ARROW_MS      220     /* arrow closing in on the house */
+#define RETURNING_HOME_MS       900     /* house held */
+#define WAITING_DOT_MS          420     /* one more dot appears */
+#define WAITING_GAP_MS          500     /* dots off again before repeating */
+
 /* --- main loop --------------------------------------------------------- */
 #define MAIN_LOOP_MS            5

@@ -103,6 +103,23 @@ extern const pattern_t PAT_TEXT_S;
 extern const pattern_t PAT_TEXT_C;
 extern const pattern_t PAT_TEXT_N;
 
+/* Mission states added on top of the original five (see led_animator.c). */
+extern const pattern_t PAT_UNLOAD_ARROW;
+extern const pattern_t PAT_TEXT_U;
+extern const pattern_t PAT_QR_CONFIRM;
+extern const pattern_t PAT_CHECK_BIG;
+extern const pattern_t PAT_NO_ENTRY;
+extern const pattern_t PAT_HOME;
+extern const pattern_t PAT_RETURN_ARROW_0;
+extern const pattern_t PAT_RETURN_ARROW_1;
+extern const pattern_t PAT_WAIT_1;
+extern const pattern_t PAT_WAIT_2;
+extern const pattern_t PAT_WAIT_3;
+extern const pattern_t PAT_NO_SIGNAL_1;
+extern const pattern_t PAT_NO_SIGNAL_2;
+extern const pattern_t PAT_NO_SIGNAL_3;
+extern const pattern_t PAT_NO_SIGNAL_4;
+
 /* Robot state icons (see led_animator.c). */
 extern const pattern_t PAT_CHECK;
 extern const pattern_t PAT_DRIVE_0;

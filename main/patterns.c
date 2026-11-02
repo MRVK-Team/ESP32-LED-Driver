@@ -695,6 +695,266 @@ const pattern_t PAT_TEXT_N = {
     },
 };
 
+/* --- UNLOAD_BEER ------------------------------------------------------- */
+
+/* The mirror image of PAT_LOAD_ARROW: a big arrow rising OUT of an open
+   crate, i.e. "take it off here". Deliberately the same visual grammar as
+   the load arrow with the direction reversed, and green instead of amber,
+   so at three metres the direction alone already tells the two apart. */
+const pattern_t PAT_UNLOAD_ARROW = {
+    .name = "unload arrow",
+    .px = {
+        { K,K,K,G,G,K,K,K },
+        { K,K,G,G,G,G,K,K },
+        { K,G,G,G,G,G,G,K },
+        { G,G,G,G,G,G,G,G },
+        { K,K,K,G,G,K,K,K },
+        { K,K,K,G,G,K,K,K },
+        { W,W,K,K,K,K,W,W },
+        { W,W,W,W,W,W,W,W },
+    },
+};
+
+/* The only letter UNLOAD needs that no other word here already has: N is
+   shared with S-C-A-N, and L, O, A and D with LOAD. */
+const pattern_t PAT_TEXT_U = {
+    .name = "letter U",
+    .px = {
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,A,K,K,K,A,K,K },
+        { K,K,A,A,A,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* --- QR_CONFIRM -------------------------------------------------------- */
+
+/* A large amber question mark over two QR finder squares: "QR code seen,
+   your decision". No letters and no animation, so it cannot be mistaken for
+   the SCAN_QR badge-plus-S-C-A-N cycle. */
+const pattern_t PAT_QR_CONFIRM = {
+    .name = "qr confirm",
+    .px = {
+        { K,K,A,A,A,A,K,K },
+        { K,A,A,K,K,A,A,K },
+        { K,K,K,K,K,A,A,K },
+        { K,K,K,K,A,A,K,K },
+        { K,K,K,A,A,K,K,K },
+        { K,K,K,A,A,K,K,K },
+        { W,W,K,K,K,K,W,W },
+        { W,W,K,A,A,K,W,W },
+    },
+};
+
+/* --- ACCEPTED / REJECTED ----------------------------------------------- */
+
+/* A fat green tick. PAT_CHECK is one pixel thin and is kept for
+   MISSION_COMPLETE; this one has to read across the arena. */
+const pattern_t PAT_CHECK_BIG = {
+    .name = "check big",
+    .px = {
+        { K,K,K,K,K,K,G,G },
+        { K,K,K,K,K,G,G,G },
+        { K,K,K,K,G,G,G,K },
+        { G,K,K,G,G,G,K,K },
+        { G,G,G,G,G,K,K,K },
+        { G,G,G,G,K,K,K,K },
+        { K,G,G,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* A "no entry" sign: ring with a bar through it. Rejection is a decision,
+   not a breakdown, so it must NOT be the red X that FAULT uses. */
+const pattern_t PAT_NO_ENTRY = {
+    .name = "no entry",
+    .px = {
+        { K,K,R,R,R,R,K,K },
+        { K,R,R,K,K,K,R,K },
+        { R,K,R,R,K,K,K,R },
+        { R,K,K,R,R,K,K,R },
+        { R,K,K,K,R,R,K,R },
+        { R,K,K,K,K,R,R,R },
+        { K,R,K,K,K,K,R,K },
+        { K,K,R,R,R,R,K,K },
+    },
+};
+
+/* --- RETURNING --------------------------------------------------------- */
+
+/* House with a lit doorway. Together with the arrow frames below it reads
+   as "heading home", which the plain turquoise AUTONOMOUS_DRIVING does
+   not. */
+const pattern_t PAT_HOME = {
+    .name = "home",
+    .px = {
+        { K,K,K,W,W,K,K,K },
+        { K,K,W,W,W,W,K,K },
+        { K,W,W,W,W,W,W,K },
+        { W,W,W,W,W,W,W,W },
+        { K,W,W,W,W,W,W,K },
+        { K,W,W,C,C,W,W,K },
+        { K,W,W,C,C,W,W,K },
+        { K,W,W,C,C,W,W,K },
+    },
+};
+
+/* The same arrow two pixels apart, so it visibly travels towards the house
+   before the house itself appears. */
+const pattern_t PAT_RETURN_ARROW_0 = {
+    .name = "return arrow 0",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,C,K,K,K,K },
+        { K,K,K,C,C,K,K,K },
+        { C,C,C,C,C,C,K,K },
+        { C,C,C,C,C,C,K,K },
+        { K,K,K,C,C,K,K,K },
+        { K,K,K,C,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_RETURN_ARROW_1 = {
+    .name = "return arrow 1",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,C,K,K },
+        { K,K,K,K,K,C,C,K },
+        { K,K,C,C,C,C,C,C },
+        { K,K,C,C,C,C,C,C },
+        { K,K,K,K,K,C,C,K },
+        { K,K,K,K,K,C,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* --- WAITING ----------------------------------------------------------- */
+
+/* Three fat dots appearing one by one, slowly. Neutral white, no red and no
+   amber: nothing is wrong, the robot is simply not ready yet. */
+const pattern_t PAT_WAIT_1 = {
+    .name = "wait 1",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { W,W,K,K,K,K,K,K },
+        { W,W,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_WAIT_2 = {
+    .name = "wait 2",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { W,W,K,W,W,K,K,K },
+        { W,W,K,W,W,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_WAIT_3 = {
+    .name = "wait 3",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { W,W,K,W,W,K,W,W },
+        { W,W,K,W,W,K,W,W },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+    },
+};
+
+/* --- NO_SIGNAL --------------------------------------------------------- */
+
+/* Signal bars with a red bar struck through them. White bars keep it clearly
+   apart from the all-red FAULT cross, and it stays still while FAULT
+   blinks. */
+const pattern_t PAT_NO_SIGNAL_1 = {
+    .name = "no signal",
+    .px = {
+        { R,R,K,K,K,K,K,K },
+        { K,R,R,K,K,K,K,K },
+        { K,K,R,R,K,K,W,W },
+        { K,K,K,R,R,K,W,W },
+        { K,K,K,W,R,R,W,W },
+        { K,K,K,W,W,R,R,W },
+        { W,W,K,W,W,K,R,R },
+        { W,W,K,W,W,K,W,R },
+    },
+};
+
+const pattern_t PAT_NO_SIGNAL_2 = {
+    .name = "no signal",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { W,W,K,K,K,K,K,K },
+        { W,W,K,K,K,K,K,K },
+    },
+};
+
+const pattern_t PAT_NO_SIGNAL_3 = {
+    .name = "no signal",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,W,W,K,K,K },
+        { K,K,K,W,W,K,K,K },
+        { W,W,K,W,W,K,K,K },
+        { W,W,K,W,W,K,K,K },
+    },
+};
+
+const pattern_t PAT_NO_SIGNAL_4 = {
+    .name = "no signal",
+    .px = {
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,K,K },
+        { K,K,K,K,K,K,W,W },
+        { K,K,K,K,K,K,W,W },
+        { K,K,K,W,W,K,W,W },
+        { K,K,K,W,W,K,W,W },
+        { W,W,K,W,W,K,W,W },
+        { W,W,K,W,W,K,W,W },
+    },
+};
+
+
+// const pattern_t PAT_NO_SIGNAL = {
+//     .name = "no signal",
+//     .px = {
+//         { K,K,W,W,W,W,K,R },
+//         { K,W,K,K,K,K,R,K },
+//         { W,K,K,K,K,R,K,W },
+//         { K,K,W,W,R,W,K,K },
+//         { K,W,K,R,K,K,W,K },
+//         { K,K,R,K,K,K,K,K },
+//         { K,R,K,W,W,K,K,K },
+//         { R,K,K,K,K,K,K,K },
+//     },
+// };
+
 #undef K
 #undef R
 #undef O

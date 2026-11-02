@@ -8,6 +8,13 @@ static const char *const s_names[ROBOT_STATE_COUNT] = {
     [ROBOT_STATE_FAULT]              = "FAULT",
     [ROBOT_STATE_MISSION_COMPLETE]   = "MISSION_COMPLETE",
     [ROBOT_STATE_SCAN_QR]            = "SCAN_QR",
+    [ROBOT_STATE_UNLOAD_BEER]        = "UNLOAD_BEER",
+    [ROBOT_STATE_QR_CONFIRM]         = "QR_CONFIRM",
+    [ROBOT_STATE_ACCEPTED]           = "ACCEPTED",
+    [ROBOT_STATE_REJECTED]           = "REJECTED",
+    [ROBOT_STATE_RETURNING]          = "RETURNING",
+    [ROBOT_STATE_WAITING]            = "WAITING",
+    [ROBOT_STATE_NO_SIGNAL]          = "NO_SIGNAL",
 };
 
 const char *robot_state_name(robot_state_t state)

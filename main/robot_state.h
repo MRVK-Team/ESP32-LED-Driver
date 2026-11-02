@@ -17,6 +17,15 @@ typedef enum {
     ROBOT_STATE_FAULT,
     ROBOT_STATE_MISSION_COMPLETE,
     ROBOT_STATE_SCAN_QR,
+    /* Added for the delivery mission. Appended, so the numbering of the
+       five states above never moves. */
+    ROBOT_STATE_UNLOAD_BEER,
+    ROBOT_STATE_QR_CONFIRM,
+    ROBOT_STATE_ACCEPTED,
+    ROBOT_STATE_REJECTED,
+    ROBOT_STATE_RETURNING,
+    ROBOT_STATE_WAITING,
+    ROBOT_STATE_NO_SIGNAL,
     ROBOT_STATE_COUNT,
 } robot_state_t;
 
